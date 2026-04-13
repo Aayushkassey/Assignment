@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>LabPortal | Dashboard</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    
+    <style>
+        body { background-color: #f8f9fa; min-height: 100vh; }
+        .sidebar { min-height: 100vh; background: #212529; color: white; position: fixed; z-index: 100; }
+        .card-custom { border: none; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); transition: transform 0.2s; }
+        .card-custom:hover { transform: translateY(-3px); }
+        .code-area { font-family: 'Courier New', Courier, monospace; background: #1e1e1e; color: #d4d4d4; resize: none; }
+        iframe { border-radius: 12px; border: 1px solid #ddd; background: white; }
+        .nav-link.active { font-weight: bold; }
+        
+        /* Layout Adjustment for Sidebar */
+        @media (min-width: 768px) {
+            .main-content-wrapper { margin-left: 25%; }
+        }
+        @media (min-width: 992px) {
+            .main-content-wrapper { margin-left: 16.666667%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <nav class="col-md-3 col-lg-2 d-md-block sidebar p-3">
+                <h4 class="text-center mb-4 text-primary fw-bold">LabPortal</h4>
+                <ul class="nav flex-column">
+                    <li class="nav-item mb-2">
+                        <a class="nav-link {% if not show_profile and not selected_lab %}text-white active bg-primary rounded{% else %}text-white-50{% endif %}" href="{% url 'dashboard' %}">
+                            <i class="fas fa-home me-2"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item mb-2">
+                        <a class="nav-link {% if show_profile %}text-white active bg-primary rounded{% else %}text-white-50{% endif %}" href="{% url 'profile_view' %}">
+                            <i class="fas fa-user me-2"></i> Profile
+                        </a>
+                    </li>
+                    <hr class="text-white-50">
+                    <li class="nav-item">
+                        <form action="{% url 'logout' %}" method="post">
+                            {% csrf_token %}
+                            <button type="submit" class="nav-link border-0 bg-transparent text-white-50 w-100 text-start">
+                                <i class="fas fa-sign-out-alt me-2"></i> Logout
+                            </button>
+                        </form>
+                    </li>
+                </ul>
+            </nav>
+
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4 main-content-wrapper">
+                
+                <div class="d-flex justify-content-between align-items-center pt-3 pb-2 mb-4 border-bottom">
+                    <h1 class="h3">
+                        {% if selected_lab %}{{ selected_lab.title }}
+                        {% elif show_profile %}My Profile
+                        {% else %}Dashboard{% endif %}
+                    </h1>
+                    <div>
+                        {% if selected_lab or show_profile %}
+                            <a href="{% url 'dashboard' %}" class="btn btn-sm btn-outline-secondary me-2">Back to Dashboard</a>
+                        {% endif %}
+                        <span class="badge bg-primary px-3 py-2 fs-6">
+                            {{ request.user.username }} ({{ request.user.role|title }})
+                        </span>
+                    </div>
+                </div>
+
+                {% if selected_lab %}
+                    <div class="row" style="height: 75vh;">
+                        <div class="col-md-4 d-flex flex-column h-100">
+                            <div class="card card-custom p-3 flex-grow-1 overflow-auto mb-3">
+                                <h5 class="fw-bold text-primary"><i class="fas fa-book-open me-2"></i>Instructions</h5>
+                                <p>{{ selected_lab.description|linebreaks }}</p>
+                                <hr>
+                                <form method="post">
+                                    {% csrf_token %}
+                                    <label class="fw-bold mb-2">Code Submission Box:</label>
+                                    <textarea name="code_content" id="final-code" class="form-control code-area" rows="10" placeholder="Type your solution here..." required>{{ submission.code }}</textarea>
+                                    <button type="submit" class="btn btn-success w-100 mt-3 fw-bold shadow-sm">Submit Assignment</button>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="col-md-8 h-100">
+                            <div class="card card-custom h-100 overflow-hidden shadow-lg">
+                                <iframe src="https://pyblaze.com/embed/python" width="100%" height="100%"></iframe>
+                            </div>
+                        </div>
+                    </div>
+
+                {% elif show_profile %}
+                    {% include 'assignments/view_profile.html' %}
+
+                {% else %}
+                    
+                    {% if request.user.role == 'teacher' %}
+                        <div class="d-flex justify-content-between mb-3 mt-2">
+                            <h4>Current Lab Assignments</h4>
+                            <a href="{% url 'add_lab' %}" class="btn btn-success shadow-sm"><i class="fas fa-plus me-2"></i>New Lab</a>
+                        </div>
+                        <div class="row">
+                            {% for lab in labs %}
+                            <div class="col-md-4 mb-4">
+                                <div class="card card-custom p-3 h-100 border-top border-primary border-4">
+                                    <h5 class="fw-bold">{{ lab.title }}</h5>
+                                    <p class="text-muted small mb-3">Semester: {{ lab.semester }}</p>
+                                    <a href="{% url 'view_submissions' lab.id %}" class="btn btn-outline-primary btn-sm mt-auto w-100">
+                                        <i class="fas fa-list-ul me-2"></i>View Submissions
+                                    </a>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+
+                    {% else %}
+                        <h4>Available Lab Tasks</h4>
+                        <div class="row mt-3">
+                            {% for lab in labs %}
+                            <div class="col-md-6 mb-4">
+                                <div class="card card-custom h-100 border-start {% if lab.id in submitted_lab_ids %}border-success{% else %}border-primary{% endif %} border-4">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between align-items-start">
+                                            <h5 class="card-title fw-bold {% if lab.id in submitted_lab_ids %}text-success{% endif %}">
+                                                {{ lab.title }}
+                                            </h5>
+                                            {% if lab.id in submitted_lab_ids %}
+                                                <span class="badge bg-success rounded-pill">
+                                                    <i class="fas fa-check-circle me-1"></i> Submitted
+                                                </span>
+                                            {% endif %}
+                                        </div>
+                                        
+                                        <p class="card-text text-muted">{{ lab.description|truncatewords:20 }}</p>
+                                        
+                                        <div class="d-flex justify-content-between align-items-center mt-4">
+                                            <span class="text-danger small fw-bold">
+                                                <i class="far fa-calendar-alt me-1"></i>Due: {{ lab.deadline|date:"M d" }}
+                                            </span>
+                                            
+                                            {% if lab.id in submitted_lab_ids %}
+                                                <a href="{% url 'lab_detail' lab.id %}" class="btn btn-outline-success px-4 shadow-sm">
+                                                    <i class="fas fa-eye me-1"></i> Review
+                                                </a>
+                                            {% else %}
+                                                <a href="{% url 'lab_detail' lab.id %}" class="btn btn-primary px-4 shadow-sm">
+                                                    Work Now
+                                                </a>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% empty %}
+                            <div class="col-12 text-center py-5">
+                                <p class="text-muted">No assignments found for Semester {{ request.user.semester }}.</p>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                {% endif %}
+            </main>
+        </div>
+    </div>
+
+    <script>
+        const finalCode = document.getElementById('final-code');
+        if (finalCode) {
+            finalCode.addEventListener('paste', (e) => {
+                e.preventDefault();
+                alert("Anti-Plagiarism: You must type your code manually.");
+            });
+        }
+        document.addEventListener('contextmenu', e => e.preventDefault());
+    </script>
+</body>
+</html>
