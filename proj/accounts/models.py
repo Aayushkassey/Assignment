@@ -2,10 +2,12 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 # Create your models here.
 class User(AbstractUser):
+    IS_ADMIN = 'admin'
     IS_STUDENT = 'student'
     IS_TEACHER = 'teacher'
 
     ROLE_CHOICES = [
+        (IS_ADMIN, 'Admin'),
         (IS_STUDENT, 'Student'),
         (IS_TEACHER, 'Teacher'),
     ]
