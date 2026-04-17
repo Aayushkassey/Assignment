@@ -9,64 +9,87 @@
     <style>
         body { background-color: #f8f9fa; }
         .form-card { border: none; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        .btn-submit { border-radius: 8px; padding: 12px; font-weight: 600; }
+        .btn-submit { border-radius: 8px; padding: 12px; font-weight: 600; transition: all 0.3s; }
+        .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(13, 110, 253, 0.3); }
+        .form-label { font-size: 0.9rem; color: #495057; }
     </style>
 </head>
 <body>
 
 <div class="container py-5">
     <div class="row justify-content-center">
-        <div class="col-md-8 col-lg-6">
-            <a href="{% url 'dashboard' %}" class="btn btn-link text-decoration-none mb-3">
-                <i class="fas fa-arrow-left"></i> Back to Dashboard
+        <div class="col-md-8 col-lg-7">
+            <a href="{% url 'dashboard' %}" class="btn btn-link text-decoration-none mb-3 text-secondary">
+                <i class="fas fa-arrow-left me-1"></i> Back to Dashboard
             </a>
 
-            <div class="card form-card p-4">
-                <h3 class="mb-4 text-center"><i class="fas fa-flask text-primary me-2"></i>Post New Lab Work</h3>
+            <div class="card form-card p-4 p-lg-5">
+                <div class="text-center mb-4">
+                    <div class="bg-primary bg-opacity-10 d-inline-block p-3 rounded-circle mb-3">
+                        <i class="fas fa-flask fa-2x text-primary"></i>
+                    </div>
+                    <h3 class="fw-bold">Post New Lab Work</h3>
+                    <p class="text-muted">Fill in the details to assign a new task to your students.</p>
+                </div>
                 
                 <form method="post">
                     {% csrf_token %}
                     
                     <div class="mb-3">
                         <label class="form-label fw-bold">Lab Title</label>
-                        <input type="text" name="title" class="form-control" placeholder="e.g. Java Basics: Loops" required>
+                        <input type="text" name="title" class="form-control form-control-lg" placeholder="e.g. Data Structures: Linked List Implementation" required>
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Semester</label>
-                        <select name="semester" class="form-select" required>
-                            <option value="" selected disabled>Select Semester</option>
-                            <option value="1">Semester 1</option>
-                            <option value="2">Semester 2</option>
-                            <option value="3">Semester 3</option>
-                            <option value="4">Semester 4</option>
-                            <option value="5">Semester 5</option>
-                            <option value="6">Semester 6</option>
-                            <option value="7">Semester 7</option>
-                            <option value="8">Semester 8</option>
-                        </select>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Semester</label>
+                            <select name="semester" class="form-select" required>
+                                <option value="" selected disabled>Select Semester</option>
+                                {% for i in "12345678"|make_list %}
+                                    <option value="{{ i }}">Semester {{ i }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Target Batch</label>
+                            <input list="batchOptions" name="batch" class="form-control" placeholder="e.g. 2080" required>
+                            <datalist id="batchOptions">
+                                <option value="2078">
+                                <option value="2079">
+                                <option value="2080">
+                                <option value="2081">
+                            </datalist>
+                        </div>
                     </div>
 
                     <div class="mb-3">
                         <label class="form-label fw-bold">Instructions / Problem Statement</label>
-                        <textarea name="description" class="form-control" rows="5" placeholder="Write the lab tasks here..." required></textarea>
-                        <small class="text-muted">Explain what the student needs to type in the compiler.</small>
+                        <textarea name="description" class="form-control" rows="6" placeholder="Write the lab tasks here... Use clear steps." required></textarea>
+                        <div class="form-text small">Explain the logic or expected output for the student.</div>
                     </div>
 
                     <div class="mb-4">
                         <label class="form-label fw-bold">Submission Deadline</label>
-                        <input type="datetime-local" name="deadline" class="form-control" required>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="far fa-calendar-alt"></i></span>
+                            <input type="datetime-local" name="deadline" class="form-control" required>
+                        </div>
                     </div>
 
-                    <button type="submit" class="btn btn-primary w-100 btn-submit shadow-sm">
+                    <button type="submit" class="btn btn-primary w-100 btn-submit shadow-sm mt-2">
                         <i class="fas fa-paper-plane me-2"></i> Publish Lab Work
                     </button>
                 </form>
             </div>
+            
+            <p class="text-center mt-4 text-muted small">
+                Labs published here will be visible to students matching the <strong>Semester</strong> and <strong>Batch</strong>.
+            </p>
         </div>
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
