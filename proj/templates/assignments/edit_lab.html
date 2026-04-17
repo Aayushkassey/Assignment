@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en" data-bs-theme="light">
+    <head>
+        <title>Edit Lab</title>
+        <!-- Required meta tags -->
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+        <!-- Bootstrap CSS v5.3.8 -->
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+            integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
+            crossorigin="anonymous"
+        />
+    </head>
+
+    <body>
+        <header>
+            <!-- place navbar here -->
+        </header>
+        <main>
+            <div class="container mt-5">
+                <h2>Edit Lab</h2>
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="title" class="form-label">Title</label>
+                        <input type="text" class="form-control" id="title" name="title" value="{{ lab.title }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea class="form-control" id="description" name="description" rows="3">{{ lab.description }}</textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="semester" class="form-label">Semester</label>
+                        <input type="text" class="form-control" id="semester" name="semester" value="{{ lab.semester }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="batch" class="form-label">Batch</label>
+                        <input type="text" class="form-control" id="batch" name="batch" value="{{ lab.batch }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="deadline" class="form-label">Deadline</label>
+                        <input type="date" class="form-control" id="deadline" name="deadline" value="{{ lab.deadline }}" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Update Lab</button>
+                </form>
+            </div>
+        </main>
+        <footer>
+            <!-- place footer here -->
+        </footer>
+        <!-- Bootstrap JavaScript Bundle (includes Popper) -->
+        <script
+            src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+            crossorigin="anonymous"
+        ></script>
+    </body>
+</html>
