@@ -11,5 +11,5 @@ urlpatterns = [
     path('compiler/', compiler, name='compiler'),
     path('view_submissions/<int:lab_id>/', view_submissions, name='view_submissions'),
     path('delete_submissions/', delete_submissions, name='delete_submissions'),
-    path('profile_view/', profile_view, name='profile_view'),
+    path('view_profile/', view_profile, name='view_profile'),
 ]

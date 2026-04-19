@@ -9,8 +9,10 @@ User = get_user_model()
 def home(request):
     return render(request, 'assignments/home.html')
 
+
 @login_required
 def dashboard(request):
+    show_profile = request.GET.get('profile')
     if request.user.role == 'student':
         # Students see labs matching their own semester and batch
         labs = LabWork.objects.filter(
@@ -23,7 +25,8 @@ def dashboard(request):
         
         return render(request, 'assignments/dashboard.html', {
             'labs': labs,
-            'submitted_lab_ids': submitted_lab_ids
+            'submitted_lab_ids': list(submitted_lab_ids),
+            'show_profile': show_profile,  # Flag to show profile link in navbar
         })
     
     else:
@@ -31,26 +34,33 @@ def dashboard(request):
         selected_batch = request.GET.get('batch')
         selected_semester = request.GET.get('semester')
 
-        # Get unique batches and semesters for the filter dropdowns
+        # Dropdown options
         all_batches = LabWork.objects.values_list('batch', flat=True).distinct().order_by('-batch')
         all_semesters = LabWork.objects.values_list('semester', flat=True).distinct().order_by('semester')
 
+        # Teacher's Assignments
         labs = LabWork.objects.filter(teacher=request.user)
 
-        # Apply filters if selected
+        # Student Directory (Hierarchy ko lagi ordering milayeko)
+        students = User.objects.filter(role='student').order_by('batch', 'semester', 'roll_number')
+
+        # Filters apply garne
         if selected_batch:
             labs = labs.filter(batch=selected_batch)
+            students = students.filter(batch=selected_batch)
         if selected_semester:
             labs = labs.filter(semester=selected_semester)
+            students = students.filter(semester=selected_semester)
 
         return render(request, 'assignments/dashboard.html', {
             'labs': labs,
+            'students': students,
             'all_batches': all_batches,
             'all_semesters': all_semesters,
             'selected_batch': selected_batch,
             'selected_semester': selected_semester,
+            'show_profile': show_profile,  # Flag to show profile link in navbar
         })
-
 @login_required
 def upgrade_semester(request):
     if request.user.role != 'teacher':
@@ -183,9 +193,9 @@ def delete_submissions(request):
     return redirect('dashboard')
 
 @login_required
-def profile_view(request):
-    # This renders dashboard but triggers the 'profile_view.html' include
-    return render(request, 'assignments/dashboard.html', {'show_profile': True})
+def view_profile(request):
+    
+    return render(request, 'assignments/view_profile.html', {'show_profile': True})
 
 def compiler(request):
     # This is a standalone helper if needed
