@@ -9,7 +9,6 @@ class StudentTeacherRegistrationForm(UserCreationForm):
     ], widget=forms.Select(attrs={'class': 'form-control'}))
     class Meta(UserCreationForm.Meta):
         model = User
-        # Username thapnai parchha, natra user create hunna
         fields = ("username", "name", "roll_number", "email", "role", "semester", "batch")
 
     def __init__(self, *args, **kwargs):

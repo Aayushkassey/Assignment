@@ -5,223 +5,213 @@
     <title>LabPortal | Dashboard</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-    
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
-    
+    <style>
+        body { background-color: #f8fafc; font-family: 'Inter', sans-serif; }
+        .sidebar { min-height: 100vh; background: #1e293b; color: white; position: fixed; width: inherit; }
+        .nav-link { color: #cbd5e1; transition: 0.3s; padding: 12px 15px; border-radius: 8px; margin-bottom: 5px; }
+        .nav-link:hover, .nav-link.active { background: #3b82f6; color: white; }
+        .main-content { margin-left: auto; }
+        .card-custom { border: none; border-radius: 12px; transition: 0.3s; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); }
+        .folder-card { border-left: 5px solid #3b82f6; cursor: pointer; }
+        .folder-card:hover { background: #f1f5f9; transform: translateX(5px); }
+        .badge-custom { padding: 6px 12px; border-radius: 20px; font-weight: 600; }
+        .status-submitted { border-left: 5px solid #10b981 !important; }
+    </style>
 </head>
 <body>
     <div class="container-fluid">
         <div class="row">
             <nav class="col-md-3 col-lg-2 d-md-block sidebar p-3">
-                <h4 class="text-center mb-4 text-primary fw-bold">LabPortal</h4>
+                <h3 class="text-center mb-4 text-primary fw-bold">LabPortal</h3>
                 <ul class="nav flex-column">
-                    <li class="nav-item mb-2">
-                        <a class="nav-link {% if not show_profile and not selected_lab %}text-white active bg-primary rounded{% else %}text-white-50{% endif %}" href="{% url 'dashboard' %}">
-                            <i class="fas fa-home me-2"></i> Dashboard
+                    <li class="nav-item">
+                        <a class="nav-link {% if not show_profile and not selected_lab %}active{% endif %}" href="{% url 'dashboard' %}">
+                            <i class="fas fa-th-large me-2"></i> Dashboard
                         </a>
                     </li>
-                    <li class="nav-item mb-2">
-                        <a class="nav-link {% if show_profile %}text-white active bg-primary rounded{% else %}text-white-50{% endif %}" href="{% url 'profile_view' %}">
-                            <i class="fas fa-user me-2"></i> Profile
+                    <li class="nav-item">
+                        <a class="nav-link {% if show_profile %}active{% endif %}" href="{% url 'view_profile' %}">
+                            <i class="fas fa-user-circle me-2"></i> Profile
                         </a>
                     </li>
                     <hr class="text-white-50">
                     <li class="nav-item">
                         <form action="{% url 'logout' %}" method="post">
                             {% csrf_token %}
-                            <button type="submit" class="nav-link border-0 bg-transparent text-white-50 w-100 text-start">
-                                <i class="fas fa-sign-out-alt me-2"></i> Logout
+                            <button type="submit" class="nav-link border-0 bg-transparent w-100 text-start text-danger">
+                                <i class="fas fa-power-off me-2"></i> Logout
                             </button>
                         </form>
                     </li>
                 </ul>
             </nav>
 
-            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4 main-content-wrapper">
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4 main-content">
                 
-                {% if messages %}
-                    {% for message in messages %}
-                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                            {{ message }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>
-                    {% endfor %}
-                {% endif %}
-
-                <div class="d-flex justify-content-between align-items-center pt-3 pb-2 mb-4 border-bottom">
-                    <h1 class="h3">
-                        {% if selected_lab %}{{ selected_lab.title }}
+                <div class="d-flex justify-content-between align-items-center pb-3 mb-4 border-bottom">
+                    <h2 class="fw-bold text-dark">
+                        {% if selected_lab %}Working on Lab
                         {% elif show_profile %}My Profile
                         {% else %}Dashboard{% endif %}
-                    </h1>
-                    <div>
+                    </h2>
+                    <div class="d-flex align-items-center">
                         {% if selected_lab or show_profile %}
-                            <a href="{% url 'dashboard' %}" class="btn btn-sm btn-outline-secondary me-2">Back to Dashboard</a>
+                            <a href="{% url 'dashboard' %}" class="btn btn-sm btn-outline-secondary me-3">Back</a>
                         {% endif %}
-                        <span class="badge bg-primary px-3 py-2 fs-6">
-                            {{ request.user.username }} ({{ request.user.role|title }})
-                        </span>
+                        <div class="dropdown">
+                            <button class="btn btn-primary dropdown-toggle badge-custom shadow-sm" data-bs-toggle="dropdown">
+                                {{ request.user.name }} ({{ request.user.role|title }})
+                            </button>
+                        </div>
                     </div>
                 </div>
 
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show shadow-sm border-0">{{ message }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+                    {% endfor %}
+                {% endif %}
+
                 {% if selected_lab %}
-                    <div class="row" style="height: 75vh;">
-                        <div class="col-md-4 d-flex flex-column h-100">
-                            <div class="card card-custom p-3 flex-grow-1 overflow-auto mb-3">
-                                <h5 class="fw-bold text-primary"><i class="fas fa-book-open me-2"></i>Instructions</h5>
-                                <p>{{ selected_lab.description|linebreaks }}</p>
+                    <div class="row g-4" style="height: 75vh;">
+                        <div class="col-lg-4 h-100 overflow-auto">
+                            <div class="card card-custom p-4 bg-white h-100">
+                                <h4 class="fw-bold text-primary">{{ selected_lab.title }}</h4>
+                                <p class="text-muted small">Semester: {{ selected_lab.semester }} | Batch: {{ selected_lab.batch }}</p>
                                 <hr>
-                                <form method="post">
+                                <p>{{ selected_lab.description|linebreaks }}</p>
+                                <form method="post" class="mt-auto">
                                     {% csrf_token %}
-                                    <label class="fw-bold mb-2">Code Submission Box:</label>
-                                    <textarea name="code_content" id="final-code" class="form-control code-area" rows="10" placeholder="Type your solution here..." required>{{ submission.code }}</textarea>
-                                    <button type="submit" class="btn btn-success w-100 mt-3 fw-bold shadow-sm">Submit Assignment</button>
+                                    <textarea name="code_content" id="final-code" class="form-control mb-3" rows="12" style="font-family: 'Consolas', monospace;" placeholder="Paste your code here..." required>{{ submission.code }}</textarea>
+                                    <button type="submit" class="btn btn-success w-100 fw-bold">Submit My Work</button>
                                 </form>
                             </div>
                         </div>
-                        <div class="col-md-8 h-100">
+                        <div class="col-lg-8 h-100">
                             <div class="card card-custom h-100 overflow-hidden shadow-lg">
-                                <iframe src="https://pyblaze.com/embed/python" width="100%" height="100%"></iframe>
+                                <iframe src="https://pyblaze.com/embed/python" width="100%" height="100%" frameborder="0"></iframe>
                             </div>
                         </div>
                     </div>
 
                 {% elif show_profile %}
-                    {% include 'assignments/view_profile.html' %}
+                    <div class="row justify-content-center">
+                        <div class="col-md-8">
+                            <div class="card card-custom bg-white p-5 text-center shadow-sm">
+                                <div class="bg-primary text-white rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center shadow" style="width: 80px; height: 80px; font-size: 2rem;">
+                                    {{ request.user.name|slice:":1" }}
+                                </div>
+                                <h3 class="fw-bold">{{ request.user.name }}</h3>
+                                <p class="text-muted">{{ request.user.email }}</p>
+                                <div class="row text-start mt-4 bg-light p-3 rounded">
+                                    <div class="col-6 mb-2"><strong>Role:</strong> {{ request.user.role|title }}</div>
+                                    <div class="col-6 mb-2"><strong>Batch:</strong> {{ request.user.batch }}</div>
+                                    <div class="col-6"><strong>Semester:</strong> {{ request.user.semester }}</div>
+                                    <div class="col-6"><strong>ID:</strong> #{{ request.user.roll_number }}</div>
+                                </div>
+                                <a href="{% url 'edit_profile' %}" class="btn btn-outline-primary mt-4">Edit Profile</a>
+                            </div>
+                        </div>
+                    </div>
 
                 {% else %}
-                    
                     {% if request.user.role == 'teacher' %}
-                        <div class="filter-section d-flex flex-wrap justify-content-between align-items-end gap-3">
-                            <form method="GET" class="d-flex flex-wrap gap-2 flex-grow-1">
-                                <div style="min-width: 150px;">
-                                    <label class="small fw-bold text-muted">Filter Batch</label>
-                                    <select name="batch" class="form-select">
-                                        <option value="">All Batches</option>
-                                        {% for b in all_batches %}
-                                            <option value="{{ b }}" {% if b == selected_batch %}selected{% endif %}>Batch {{ b }}</option>
-                                        {% endfor %}
-                                    </select>
-                                </div>
-                                <div style="min-width: 150px;">
-                                    <label class="small fw-bold text-muted">Filter Semester</label>
-                                    <select name="semester" class="form-select">
-                                        <option value="">All Semesters</option>
-                                        {% for s in all_semesters %}
-                                            <option value="{{ s }}" {% if s == selected_semester %}selected{% endif %}>Semester {{ s }}</option>
-                                        {% endfor %}
-                                    </select>
-                                </div>
-                                <button type="submit" class="btn btn-primary mt-auto">Filter</button>
-                                <a href="{% url 'dashboard' %}" class="btn btn-light mt-auto text-muted">Reset</a>
-                            </form>
-
-                            <div class="d-flex gap-2">
-                                <button class="btn btn-warning fw-bold" data-bs-toggle="modal" data-bs-target="#upgradeModal">
-                                    <i class="fas fa-arrow-circle-up me-1"></i> Upgrade Semester
-                                </button>
-                                <a href="{% url 'add_lab' %}" class="btn btn-success fw-bold">
-                                    <i class="fas fa-plus me-1"></i> New Lab
-                                </a>
+                        <div class="row mb-4 align-items-center">
+                            <div class="col">
+                                <h4 class="fw-bold m-0 text-secondary">Manage Students & Labs</h4>
+                            </div>
+                            <div class="col-auto">
+                                <button class="btn btn-warning fw-bold" data-bs-toggle="modal" data-bs-target="#upgradeModal">Upgrade Semester</button>
+                                <a href="{% url 'add_lab' %}" class="btn btn-success fw-bold ms-2">+ New Lab</a>
                             </div>
                         </div>
 
-                        <h4 class="mb-3">Assignments ({{ labs|length }})</h4>
-                        <div class="row">
-                            {% for lab in labs %}
-                            <div class="col-md-4 mb-4">
-                                <div class="card card-custom p-3 h-100 border-top border-primary border-4">
-                                    <h5 class="fw-bold">{{ lab.title }}</h5>
-                                    <div class="mb-2">
-                                        <span class="badge bg-light text-dark border">Batch: {{ lab.batch }}</span>
-                                        <span class="badge bg-light text-dark border">Sem: {{ lab.semester }}</span>
+                        <div class="accordion mb-5 shadow-sm rounded border-0" id="directory">
+                            {% regroup students by batch as batch_list %}
+                            {% for batch in batch_list %}
+                            <div class="accordion-item border-0 mb-2">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed fw-bold rounded shadow-sm" type="button" data-bs-toggle="collapse" data-bs-target="#batch{{ batch.grouper }}">
+                                        <i class="fas fa-folder text-warning me-3"></i> Batch {{ batch.grouper }}
+                                    </button>
+                                </h2>
+                                <div id="batch{{ batch.grouper }}" class="accordion-collapse collapse" data-bs-parent="#directory">
+                                    <div class="accordion-body bg-light-subtle">
+                                        {% regroup batch.list by semester as semester_list %}
+                                        {% for sem in semester_list %}
+                                            <div class="card folder-card mb-2 p-3 border-0 shadow-sm" data-bs-toggle="collapse" data-bs-target="#list{{ batch.grouper }}{{ sem.grouper }}">
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <span><strong>Semester {{ sem.grouper }}</strong></span>
+                                                    <span class="badge bg-secondary rounded-pill">{{ sem.list|length }} Students</span>
+                                                </div>
+                                                <div class="collapse mt-3" id="list{{ batch.grouper }}{{ sem.grouper }}">
+                                                    <table class="table table-sm table-hover text-center">
+                                                        <thead class="table-light"><tr><th>Roll</th><th>Name</th><th>Email</th></tr></thead>
+                                                        <tbody>
+                                                            {% for s in sem.list %}
+                                                            <tr><td>#{{ s.roll_number }}</td><td>{{ s.name }}</td><td>{{ s.email }}</td></tr>
+                                                            {% endfor %}
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        {% endfor %}
                                     </div>
-                                    <p class="text-muted small">{{ lab.description|truncatewords:10 }}</p>
-                                    <a href="{% url 'view_submissions' lab.id %}" class="btn btn-outline-primary btn-sm mt-auto w-100">
-                                        <i class="fas fa-list-ul me-2"></i>View Submissions
-                                    </a>
-                                    <a href ="{% url 'edit_lab' lab.id %}" class="btn btn-primary btn-sm mt-2 w-100">
-                                        <i class="fas fa-edit me-2"></i>Edit Lab
-                                    </a>
-                                    <a href="{% url 'delete_lab' lab.id %}" class="btn btn-danger btn-sm mt-2 w-100" onclick="return confirm('Are you sure you want to delete this lab? This action cannot be undone.')">
-                                        <i class="fas fa-trash-alt me-2"></i>Delete Lab 
-                                    </a>
-
                                 </div>
-                            </div>
-                            {% empty %}
-                            <div class="col-12 text-center py-5">
-                                <p class="text-muted">No labs found for the selected filters.</p>
                             </div>
                             {% endfor %}
                         </div>
 
-                        <div class="modal fade" id="upgradeModal" tabindex="-1">
-                            <div class="modal-dialog">
-                                <div class="modal-content border-0">
-                                    <form action="{% url 'upgrade_semester' %}" method="POST">
-                                        {% csrf_token %}
-                                        <div class="modal-header bg-warning text-dark">
-                                            <h5 class="modal-title fw-bold">Upgrade Batch Semester</h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                        </div>
-                                        <div class="modal-body">
-                                            <p class="small text-muted mb-4">This will promote all students in the specific batch to the next semester level.</p>
-                                            <div class="mb-3">
-                                                <label class="form-label fw-bold">Target Batch</label>
-                                                <input type="text" name="batch_to_upgrade" class="form-control" placeholder="e.g. 2080" required>
-                                            </div>
-                                            <div class="mb-3">
-                                                <label class="form-label fw-bold">Current Semester</label>
-                                                <input type="number" name="current_sem" class="form-control" placeholder="e.g. 4" required>
-                                            </div>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
-                                            <button type="submit" class="btn btn-warning fw-bold">Confirm Upgrade</button>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-
-                    {% else %}
-                        <h4>Available Lab Tasks</h4>
-                        <div class="row mt-3">
+                        <h4 class="fw-bold mb-4">Published Assignments</h4>
+                        <div class="row">
                             {% for lab in labs %}
-                            <div class="col-md-6 mb-4">
-                                <div class="card card-custom h-100 border-start {% if lab.id in submitted_lab_ids %}border-success{% else %}border-primary{% endif %} border-4">
-                                    <div class="card-body">
-                                        <div class="d-flex justify-content-between align-items-start">
-                                            <h5 class="card-title fw-bold {% if lab.id in submitted_lab_ids %}text-success{% endif %}">
-                                                {{ lab.title }}
-                                            </h5>
-                                            {% if lab.id in submitted_lab_ids %}
-                                                <span class="badge bg-success rounded-pill">
-                                                    <i class="fas fa-check-circle me-1"></i> Submitted
-                                                </span>
-                                            {% endif %}
-                                        </div>
-                                        <p class="card-text text-muted">{{ lab.description|truncatewords:20 }}</p>
-                                        <div class="d-flex justify-content-between align-items-center mt-4">
-                                            <span class="text-danger small fw-bold">
-                                                <i class="far fa-calendar-alt me-1"></i>Due: {{ lab.deadline|date:"M d" }}
-                                            </span>
-                                            {% if lab.id in submitted_lab_ids %}
-                                                <a href="{% url 'lab_detail' lab.id %}" class="btn btn-outline-success px-4 shadow-sm">Review</a>
-                                            {% else %}
-                                                <a href="{% url 'lab_detail' lab.id %}" class="btn btn-primary px-4 shadow-sm">Work Now</a>
-                                            {% endif %}
+                            <div class="col-md-4 mb-4">
+                                <div class="card card-custom p-4 bg-white border-top border-primary border-4 h-100">
+                                    <h5 class="fw-bold">{{ lab.title }}</h5>
+                                    <div class="mb-2">
+                                        <span class="badge bg-light text-dark border">B: {{ lab.batch }}</span>
+                                        <span class="badge bg-light text-dark border">S: {{ lab.semester }}</span>
+                                    </div>
+                                    <p class="text-muted small">{{ lab.description|truncatewords:15 }}</p>
+                                    <div class="mt-auto d-grid gap-2 pt-3">
+                                        <a href="{% url 'view_submissions' lab.id %}" class="btn btn-sm btn-outline-primary">View Submissions</a>
+                                        <div class="d-flex gap-2">
+                                            <a href="{% url 'edit_lab' lab.id %}" class="btn btn-sm btn-light border flex-grow-1">Edit</a>
+                                            <a href="{% url 'delete_lab' lab.id %}" class="btn btn-sm btn-danger px-3" onclick="return confirm('Confirm delete?')"><i class="fas fa-trash-alt"></i></a>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             {% empty %}
                             <div class="col-12 text-center py-5">
-                                <p class="text-muted">No assignments found for Semester {{ request.user.semester }} (Batch {{ request.user.batch }}).</p>
+                                <p class="text-muted">No labs created yet. Click "+ New Lab" to start.</p>
                             </div>
+                            {% endfor %}
+                        </div>
+
+                    {% else %}
+                        <h4 class="fw-bold mb-4 text-secondary">Your Assignments</h4>
+                        <div class="row">
+                            {% for lab in labs %}
+                            <div class="col-md-6 mb-4">
+                                <div class="card card-custom p-4 bg-white status-submitted shadow-sm h-100 {% if lab.id in submitted_lab_ids %}status-submitted{% endif %}">
+                                    <div class="d-flex justify-content-between">
+                                        <h5 class="fw-bold">{{ lab.title }}</h5>
+                                        {% if lab.id in submitted_lab_ids %}
+                                            <span class="badge bg-success-subtle text-success border-success border">Submitted</span>
+                                        {% endif %}
+                                    </div>
+                                    <p class="text-muted small mt-2">{{ lab.description|truncatewords:25 }}</p>
+                                    <div class="d-flex justify-content-between align-items-center mt-4 pt-2 border-top">
+                                        <span class="text-danger small fw-bold"><i class="far fa-clock me-1"></i>Due: {{ lab.deadline|date:"M d, Y" }}</span>
+                                        <a href="{% url 'lab_detail' lab.id %}" class="btn btn-primary px-4 btn-sm fw-bold">Open Lab</a>
+                                    </div>
+                                </div>
+                            </div>
+                            {% empty %}
+                            <div class="col-12 text-center py-5"><p class="text-muted">No assignments for your semester/batch.</p></div>
                             {% endfor %}
                         </div>
                     {% endif %}
@@ -230,16 +220,35 @@
         </div>
     </div>
 
+    <div class="modal fade" id="upgradeModal" tabindex="-1">
+        <div class="modal-dialog">
+            <form action="{% url 'upgrade_semester' %}" method="POST" class="modal-content card-custom border-0 overflow-hidden">
+                {% csrf_token %}
+                <div class="modal-header bg-warning border-0"><h5 class="modal-title fw-bold">Upgrade Semester</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+                <div class="modal-body p-4">
+                    <label class="form-label fw-bold">Batch Year</label>
+                    <input type="text" name="batch_to_upgrade" class="form-control mb-3" placeholder="e.g. 2080" required>
+                    <label class="form-label fw-bold">Current Semester</label>
+                    <input type="number" name="current_sem" class="form-control" placeholder="e.g. 4" required>
+                </div>
+                <div class="modal-footer border-0"><button type="submit" class="btn btn-warning w-100 fw-bold">Confirm Upgrade</button></div>
+            </form>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        document.addEventListener('contextmenu', e => e.preventDefault());
         const finalCode = document.getElementById('final-code');
         if (finalCode) {
-            finalCode.addEventListener('paste', (e) => {
-                e.preventDefault();
-                alert("Anti-Plagiarism: You must type your code manually.");
-            });
+            finalCode.addEventListener('paste', e => { e.preventDefault(); alert("Anti-Plagiarism: Please type your code."); });
         }
-        document.addEventListener('contextmenu', e => e.preventDefault());
     </script>
 </body>
+<footer>
+    <div style="color: #94a3b8; text-align: center; padding: 20px 0;">
+        &copy; LabPortal. All rights reserved.
+    </div>
+</footer>
+
 </html>

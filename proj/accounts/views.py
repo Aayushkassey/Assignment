@@ -5,8 +5,7 @@ from django.contrib.auth import get_user_model, login
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.decorators import login_required
-from accounts.models import User
-from assignments.models import Submission
+from .models import User
 from .form import StudentTeacherRegistrationForm, UserEditForm
 
 User = get_user_model()
@@ -26,12 +25,31 @@ def register_view(request):
     if request.method == "POST":
         form = StudentTeacherRegistrationForm(request.POST) 
         if form.is_valid():
-            user = form.save()
-            login(request, user)
-            return redirect('dashboard')
+            username = form.cleaned_data['username']
+            name = form.cleaned_data['name']
+            roll_number = form.cleaned_data['roll_number']
+            semester = form.cleaned_data['semester']
+            batch = form.cleaned_data['batch']
+
+            if User.objects.filter(username=username).exists():
+                messages.error(request, "This username is already taken.")
+            elif User.objects.filter(name=name).exists():
+                messages.error(request, "This name is already registered.")
+            # अब roll_number check गर्दा semester र batch पनि consider गरिन्छ
+            elif User.objects.filter(
+                roll_number=roll_number,
+                semester=semester,
+                batch=batch
+            ).exists():
+                messages.error(request, "This roll number is already registered for this semester and batch.")
+            else:
+                user = form.save()
+                login(request, user)
+                return redirect('dashboard')
     else:
         form = StudentTeacherRegistrationForm()
     return render(request, 'registration/register.html', {'form': form})
+
 
 @login_required
 def edit_profile(request):
