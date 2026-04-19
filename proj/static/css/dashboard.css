@@ -1,0 +1,92 @@
+
+        /* Base Styling */
+        body { 
+            background-color: #f8fafc; 
+            font-family: 'Inter', -apple-system, sans-serif; 
+            min-height: 100vh;
+        }
+
+        /* Sidebar Layout */
+        .sidebar { 
+            min-height: 100vh; 
+            background: #1e293b; 
+            color: white; 
+            position: fixed; 
+            z-index: 100;
+            width: 100%; /* Default for mobile */
+        }
+
+        @media (min-width: 768px) {
+            .sidebar { width: 25%; }
+            .main-content { margin-left: 25%; }
+        }
+
+        @media (min-width: 992px) {
+            .sidebar { width: 16.666667%; }
+            .main-content { margin-left: 16.666667%; }
+        }
+
+        /* Navigation */
+        .nav-link { 
+            color: #cbd5e1; 
+            transition: 0.3s; 
+            padding: 12px 15px; 
+            border-radius: 8px; 
+            margin-bottom: 5px; 
+        }
+        .nav-link:hover, .nav-link.active { 
+            background: #3b82f6; 
+            color: white !important; 
+        }
+
+        /* Cards & UI Components */
+        .card-custom { 
+            border: none; 
+            border-radius: 12px; 
+            background: white;
+            transition: transform 0.2s, box-shadow 0.2s; 
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        }
+        .card-custom:hover { 
+            transform: translateY(-3px); 
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+        }
+
+        .folder-card { 
+            border-left: 5px solid #3b82f6; 
+            cursor: pointer; 
+        }
+        .folder-card:hover { 
+            background: #f1f5f9; 
+            transform: translateX(5px); 
+        }
+
+        .badge-custom { 
+            padding: 6px 12px; 
+            border-radius: 20px; 
+            font-weight: 600; 
+        }
+
+        /* Status Colors */
+        .status-submitted { 
+            border-left: 5px solid #10b981 !important; 
+        }
+
+        /* Editor Area */
+        .code-area { 
+            font-family: 'Consolas', 'Courier New', monospace; 
+            background: #1e1e1e; 
+            color: #d4d4d4; 
+        }
+
+        iframe { 
+            border-radius: 12px; 
+            border: 1px solid #e2e8f0; 
+            background: white; 
+        }
+
+        footer {
+            color: #94a3b8; 
+            text-align: center; 
+            padding: 20px 0;
+        }
