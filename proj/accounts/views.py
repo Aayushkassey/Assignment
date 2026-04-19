@@ -33,7 +33,7 @@ def register_view(request):
 
             if User.objects.filter(username=username).exists():
                 messages.error(request, "This username is already taken.")
-            elif User.objects.filter(name=name).exists():
+            elif User.objects.filter(name=name, semester=semester, batch=batch).exists():
                 messages.error(request, "This name is already registered.")
             # अब roll_number check गर्दा semester र batch पनि consider गरिन्छ
             elif User.objects.filter(
@@ -57,7 +57,7 @@ def edit_profile(request):
         form = UserEditForm(request.POST, instance=request.user)
         if form.is_valid():
             form.save()
-            return redirect('profile_view')
+            return redirect('view_profile')
     else:
         form = UserEditForm(instance=request.user)
         if request.user.role == 'teacher':
