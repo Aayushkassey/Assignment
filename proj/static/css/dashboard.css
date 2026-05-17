@@ -1,92 +1,202 @@
+/* =========================================
+   LABPORTAL GLOBAL STYLES
+=========================================
+*/
 
-        /* Base Styling */
-        body { 
-            background-color: #f8fafc; 
-            font-family: 'Inter', -apple-system, sans-serif; 
-            min-height: 100vh;
-        }
+:root { 
+    --sidebar-bg: #1e293b; 
+    --main-bg: #f8fafc; 
+    --sidebar-width: 280px;
+    --primary-blue: #3b82f6 ;
+    --text-dark: #1e293b;
+    --text-muted: #64748b;
+    --white: #ffffff;
+    --border-color: #e2e8f0;
+}
 
-        /* Sidebar Layout */
-        .sidebar { 
-            min-height: 100vh; 
-            background: #1e293b; 
-            color: white; 
-            position: fixed; 
-            z-index: 100;
-            width: 100%; /* Default for mobile */
-        }
+* {
+    box-sizing: border-box;
+}
 
-        @media (min-width: 768px) {
-            .sidebar { width: 25%; }
-            .main-content { margin-left: 25%; }
-        }
+body { 
+    background-color: var(--main-bg); 
+    font-family: 'Inter', -apple-system, sans-serif; 
+    margin: 0;
+    color: var(--text-dark);
+}
 
-        @media (min-width: 992px) {
-            .sidebar { width: 16.666667%; }
-            .main-content { margin-left: 16.666667%; }
-        }
+/* --- Sidebar Positioning --- */
+.sidebar { 
+    width: var(--sidebar-width);
+    height: 100vh;
+    background: var(--sidebar-bg);
+    color: white;
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 1050;
+    overflow-y: auto;
+    padding-top: 1rem;
+}
 
-        /* Navigation */
-        .nav-link { 
-            color: #cbd5e1; 
-            transition: 0.3s; 
-            padding: 12px 15px; 
-            border-radius: 8px; 
-            margin-bottom: 5px; 
-        }
-        .nav-link:hover, .nav-link.active { 
-            background: #3b82f6; 
-            color: white !important; 
-        }
+/* --- Main Content (The Fix) --- */
+.main-content { 
+    margin-left: var(--sidebar-width); /* Sidebar ko space xodna */
+    min-height: 100vh;
+    padding: 2rem;
+    background: var(--main-bg);
+    width: calc(100% - var(--sidebar-width)); /* Overlap huna nadina */
+    position: relative;
+    transition: all 0.3s ease;
+}
 
-        /* Cards & UI Components */
-        .card-custom { 
-            border: none; 
-            border-radius: 12px; 
-            background: white;
-            transition: transform 0.2s, box-shadow 0.2s; 
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-        }
-        .card-custom:hover { 
-            transform: translateY(-3px); 
-            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
-        }
+/* --- Responsive for Tablets/Mobile --- */
+@media (max-width: 992px) {
+    .sidebar {
+        width: 80px; /* Slim sidebar or hide logic */
+    }
+    .main-content {
+        margin-left: 80px;
+        width: calc(100% - 80px);
+        padding: 1rem;
+    }
+}
 
-        .folder-card { 
-            border-left: 5px solid #3b82f6; 
-            cursor: pointer; 
-        }
-        .folder-card:hover { 
-            background: #f1f5f9; 
-            transform: translateX(5px); 
-        }
+@media (max-width: 768px) {
+    .sidebar {
+        display: none; /* Mobile ma toggle use garnu parcha */
+    }
+    .main-content {
+        margin-left: 0;
+        width: 100%;
+    }
+}
 
-        .badge-custom { 
-            padding: 6px 12px; 
-            border-radius: 20px; 
-            font-weight: 600; 
-        }
+/* --- Sidebar Navigation --- */
+.sidebar .nav-link { 
+    color: #94a3b8; 
+    padding: 14px 24px; 
+    border-radius: 10px; 
+    margin: 5px 15px; 
+    transition: 0.3s;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
 
-        /* Status Colors */
-        .status-submitted { 
-            border-left: 5px solid #10b981 !important; 
-        }
+.sidebar .nav-link:hover, 
+.sidebar .nav-link.active { 
+    background: var(--primary-blue) !important; 
+    color: white !important; 
+}
 
-        /* Editor Area */
-        .code-area { 
-            font-family: 'Consolas', 'Courier New', monospace; 
-            background: #1e1e1e; 
-            color: #d4d4d4; 
-        }
+.sidebar .nav-link i {
+    font-size: 1.1rem;
+}
 
-        iframe { 
-            border-radius: 12px; 
-            border: 1px solid #e2e8f0; 
-            background: white; 
-        }
+/* --- Dashboard & Cards --- */
+.card-custom { 
+    border: none; 
+    border-radius: 12px; 
+    background: var(--white);
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+    margin-bottom: 1.5rem;
+}
 
-        footer {
-            color: #94a3b8; 
-            text-align: center; 
-            padding: 20px 0;
-        }
+.card-custom:hover { 
+    transform: translateY(-4px); 
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+}
+
+/* --- Student Status Table --- */
+.table-container {
+    background: var(--white);
+    border-radius: 12px;
+    padding: 1.5rem;
+    border: 1px solid var(--border-color);
+}
+
+.table thead th {
+    background-color: #f1f5f9;
+    border-bottom: 2px solid var(--border-color);
+    color: var(--text-muted);
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+}
+
+/* --- Compiler System --- */
+.compiler-card {
+    height: 85vh; /* Standard height for coding */
+    display: flex;
+    flex-direction: column;
+    border-radius: 15px;
+    overflow: hidden;
+    background: var(--white);
+    border: 1px solid var(--border-color);
+    box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+}
+
+.compiler-header {
+    background: #0f172a;
+    color: white;
+    padding: 12px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#compiler-iframe {
+    flex: 1; /* Purey baki height iframe le lincha */
+    width: 100%;
+    border: none;
+    display: block;
+}
+
+/* --- Profile Styling (Aayush Teacher section) --- */
+.profile-card {
+    background: var(--white);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+
+.profile-header {
+    background: var(--primary-blue);
+    height: 120px;
+}
+
+/* --- Badges & Small UI --- */
+.badge-custom { 
+    padding: 6px 12px; 
+    border-radius: 6px; 
+    font-weight: 600;
+    font-size: 0.8rem;
+}
+
+.folder-card { 
+    cursor: pointer; 
+    border-left: 5px solid var(--primary-blue) !important; 
+}
+
+/* --- Lab Description & Scrollbar --- */
+.lab-description {
+    max-height: 400px;
+    overflow-y: auto;
+    padding-right: 10px;
+}
+
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+}
+
+/* --- Utils --- */
+.text-success { color: #10b981 !important; }
+.bg-primary { background-color: var(--primary-blue) !important; }

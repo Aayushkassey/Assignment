@@ -1,0 +1,94 @@
+{% extends 'assignments/base.html' %}
+{% load static %}
+
+{% block title %}LabPortal | Students Status{% endblock %}
+
+{% block nav_status %}active{% endblock %}
+
+{% block page_title %}Students Status{% endblock %}
+
+{% block content %}
+
+<!-- Filter -->
+<div class="card-custom p-3 mb-4">
+    <form method="GET" class="row g-2 align-items-end">
+        <div class="col-md-4">
+            <label class="form-label">Batch</label>
+            <select name="batch" class="form-select">
+                <option value="">All Batches</option>
+                {% for batch in all_batches %}
+                    <option value="{{ batch }}" {% if selected_batch == batch|stringformat:"s" %}selected{% endif %}>{{ batch }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">Semester</label>
+            <select name="semester" class="form-select">
+                <option value="">All Semesters</option>
+                {% for sem in all_semesters %}
+                    <option value="{{ sem }}" {% if selected_semester == sem|stringformat:"s" %}selected{% endif %}>Semester {{ sem }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-4 d-flex gap-2">
+            <button type="submit" class="btn btn-primary w-100"><i class="fas fa-filter me-1"></i> Apply</button>
+            <a href="{% url 'student_status_list' %}" class="btn btn-outline-secondary w-50">Reset</a>
+        </div>
+    </form>
+</div>
+
+<!-- Table -->
+<div class="card-custom overflow-hidden">
+    <div class="d-flex justify-content-between align-items-center p-3 border-bottom">
+        <h6 class="fw-bold mb-0">Submission Progress</h6>
+        <span class="badge bg-primary px-3 py-2">Students: {{ student_stats|length }}</span>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead>
+                <tr>
+                    <th class="ps-4">Roll</th>
+                    <th>Name</th>
+                    <th>Batch / Sem</th>
+                    <th class="text-center">Assigned</th>
+                    <th class="text-center">Sent</th>
+                    <th class="text-center">Pending</th>
+                    <th class="text-center">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for data in student_stats %}
+                <tr>
+                    <td class="ps-4">#{{ data.info.roll_number }}</td>
+                    <td class="fw-bold">{{ data.info.name }}</td>
+                    <td><span class="badge bg-light text-dark border">{{ data.info.batch }} / {{ data.info.semester }}</span></td>
+                    <td class="text-center fw-bold">{{ data.assigned }}</td>
+                    <td class="text-center text-success fw-bold">{{ data.sent }}</td>
+                    <td class="text-center">
+                        {% if data.pending > 0 %}
+                            <span class="badge bg-danger-subtle text-danger border border-danger px-2">{{ data.pending }}</span>
+                        {% else %}
+                            <span class="badge bg-light text-muted border px-2">0</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-center">
+                        {% if data.assigned == 0 %}
+                            <span class="text-muted small">No Labs</span>
+                        {% elif data.pending == 0 %}
+                            <span class="badge bg-success px-3 rounded-pill">Completed</span>
+                        {% else %}
+                            <span class="badge bg-warning text-dark px-3 rounded-pill">In Progress</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="text-center py-5 text-muted">No student records found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}

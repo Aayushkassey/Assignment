@@ -12,14 +12,14 @@
             background-color: #f4f7f6;
         }
 
-        /* Same navbar behavior */
+        /* Navbar Behavior Sticky */
         .navbar {
             position: sticky;
             top: 0;
             z-index: 1000;
         }
 
-        /* Center form properly */
+        /* Responsive Form Wrapper spacing */
         .form-wrapper {
             min-height: calc(100vh - 70px);
             display: flex;
@@ -46,108 +46,193 @@
 
 <body>
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <div class="container">
-        <a class="navbar-brand fw-bold" href="{% url 'home' %}">Assignment App</a>
-
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-
-        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-            <ul class="navbar-nav">
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'login' %}">Login</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link active" href="{% url 'register' %}">Register</a>
-                </li>
-            </ul>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid px-md-5"> 
+            <a class="navbar-brand fw-bold m-0" href="{% url 'home' %}">Assignment App</a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" 
+                    data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" 
+                    aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto m-0 p-0 align-items-center" style="gap: 1.5rem;">
+                    <li class="nav-item p-0"><a class="nav-link p-0" href="{% url 'login' %}">Login</a></li>
+                    <li class="nav-item p-0"><a class="nav-link p-0" href="{% url 'register' %}">Register</a></li>
+                </ul>
+            </div>
         </div>
-    </div>
-</nav>
+    </nav>
 
-<!-- FORM -->
-<div class="form-wrapper">
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-md-6 col-lg-5">
-                <div class="card p-4">
+    <div class="form-wrapper py-5">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-10 col-lg-8">
+                    <div class="card p-4">
 
-                    <h3 class="text-center mb-4 text-primary">Create Account</h3>
+                        <h3 class="text-center mb-4 text-primary fw-bold">Create Account</h3>
 
-                    {% if messages %}
-                        {% for message in messages %}
-                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
-                                {{ message }}
-                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                            </div>
-                        {% endfor %}
-                    {% endif %}
+                        {% if messages %}
+                            {% for message in messages %}
+                                <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+                                    {{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
 
-                    <form method="post">
-                        {% csrf_token %}
+                        <form method="post">
+                            {% csrf_token %}
 
-                        {% for field in form %}
-                            <div class="mb-3" id="div_{{ field.name }}">
-                                <label class="form-label fw-bold">{{ field.label }}</label>
-                                {{ field }}
+                            <div class="row">
+                                {% for field in form %}
+                                    <div class="col-md-6 mb-3" id="div_{{ field.name }}">
+                                        <label class="form-label fw-bold">{{ field.label }}</label>
+                                        {{ field }}
 
-                                {% if field.help_text %}
-                                    <small class="text-muted">{{ field.help_text }}</small>
-                                {% endif %}
+                                        {% if field.help_text and field.name != 'username' and field.name != 'email' and field.name != 'password1' and field.name != 'password2' %}
+    <small class="text-muted d-block mt-1">{{ field.help_text }}</small>
+{% endif %}
 
-                                {% for error in field.errors %}
-                                    <div class="text-danger small">{{ error }}</div>
+                                        {% for error in field.errors %}
+                                            <div class="text-danger small">{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
                                 {% endfor %}
                             </div>
-                        {% endfor %}
 
-                        <button type="submit" class="btn btn-primary w-100 mt-3">
-                            Register
-                        </button>
-                    </form>
+                            <button type="submit" class="btn btn-primary w-100 mt-3 py-2 fs-5 shadow-sm">
+                                Register
+                            </button>
+                        </form>
 
-                    <div class="mt-3 text-center">
-                        <small>
-                            Already have an account?
-                            <a href="{% url 'login' %}" class="text-decoration-none">
-                                Login here
-                            </a>
-                        </small>
+                        <div class="mt-4 text-center">
+                            <small class="text-muted">
+                                Already have an account?
+                                <a href="{% url 'login' %}" class="text-decoration-none fw-bold">
+                                    Login here
+                                </a>
+                            </small>
+                        </div>
+
                     </div>
-
                 </div>
             </div>
         </div>
     </div>
-</div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
-<script>
-    // auto style inputs
-    document.querySelectorAll('input, select').forEach(el => {
-        el.classList.add('form-control');
-    });
+    <script>
+        // Auto style input and select fields inside grid mapping
+        document.querySelectorAll('input, select').forEach(el => {
+            el.classList.add('form-control');
+        });
 
-    // role logic same as before
-    const roleField = document.querySelector('select[name="role"]');
-    const semesterDiv = document.getElementById('div_semester');
+        // Dynamic Field Visibility Logic (Teacher role hides dynamic semester elements)
+        const roleField = document.querySelector('select[name="role"]');
+        const semesterDiv = document.getElementById('div_semester');
+        const batchDiv = document.getElementById('div_batch');
+        const rollDiv = document.getElementById('div_roll_number');
 
-    function toggleSemester() {
-        if (roleField && semesterDiv) {
-            semesterDiv.style.display =
-                (roleField.value === 'teacher') ? 'none' : 'block';
+        function toggleStudentFields() {
+            if (roleField) {
+                const isTeacher = (roleField.value === 'teacher');
+                const displayStyle = isTeacher ? 'none' : 'block';
+                
+                if (semesterDiv) semesterDiv.style.display = displayStyle;
+                if (batchDiv) batchDiv.style.display = displayStyle;
+                if (rollDiv) rollDiv.style.display = displayStyle;
+            }
         }
-    }
 
-    if (roleField) {
-        roleField.addEventListener('change', toggleSemester);
-        toggleSemester();
-    }
-</script>
+        if (roleField) {
+            roleField.addEventListener('change', toggleStudentFields);
+            toggleStudentFields(); // Execute initially on render
+        }
 
+        const usernameField = document.querySelector('input[name="username"]');
+const emailField = document.querySelector('input[name="email"]');
+
+// Debounce helper function
+function debounce(fn, delay) {
+    let timer;
+    return function(...args) {
+        clearTimeout(timer);
+        timer = setTimeout(() => fn.apply(this, args), delay);
+    };
+}
+
+function validateField(field, paramName) {
+    const handler = debounce(function() {
+        const value = field.value.trim();
+        
+        // Purano error clear
+        const oldError = document.getElementById(`error_${paramName}`);
+        if (oldError) oldError.remove();
+        field.classList.remove('is-valid', 'is-invalid');
+        
+        if (value === '') return;
+
+        fetch(`/accounts/check-availability/?${paramName}=${encodeURIComponent(value)}`)
+            .then(response => response.json())
+            .then(data => {
+                // Feri check — user le clear gareko hola type garda
+                const currentOld = document.getElementById(`error_${paramName}`);
+                if (currentOld) currentOld.remove();
+
+                if (data.is_taken) {
+                    field.classList.remove('is-valid');
+                    field.classList.add('is-invalid');
+
+                    const errorDiv = document.createElement('div');
+                    errorDiv.id = `error_${paramName}`;
+
+                    if (paramName === 'username' && data.suggestions && data.suggestions.length > 0) {
+                        const chips = data.suggestions.map(s =>
+                            `<span class="badge bg-light text-primary border border-primary me-1 suggestion-chip"
+                                   style="cursor:pointer; font-size:0.8rem;"
+                                   data-value="${s}">${s}</span>`
+                        ).join('');
+
+                        errorDiv.className = 'mt-1';
+                        errorDiv.innerHTML = `
+                            <div class="text-danger small fw-bold">❌ Username already taken!</div>
+                            <div class="mt-1 small text-muted">💡 Try one of these:</div>
+                            <div class="mt-1">${chips}</div>
+                        `;
+                        field.parentNode.appendChild(errorDiv);
+
+                        errorDiv.querySelectorAll('.suggestion-chip').forEach(chip => {
+                            chip.addEventListener('click', function() {
+                                field.value = this.dataset.value;
+                                field.classList.remove('is-invalid');
+                                field.classList.add('is-valid');
+                                errorDiv.remove();
+                            });
+                        });
+
+                    } else {
+                        errorDiv.className = 'text-danger small mt-1 fw-bold';
+                        errorDiv.innerText = `❌ ${data.suggestion}`;
+                        field.parentNode.appendChild(errorDiv);
+                    }
+
+                } else {
+                    field.classList.remove('is-invalid');
+                    field.classList.add('is-valid');
+                }
+            });
+    }, 500); // 500ms pause पछि मात्र API call
+
+    // blur होइन, input event — type garda garda trigger
+    field.addEventListener('input', handler);
+}
+
+if (usernameField) validateField(usernameField, 'username');
+if (emailField) validateField(emailField, 'email');
+    </script>
+<footer style="text-align: center; color: var(--text-muted); font-size: 0.8rem; padding: 2rem 0 1rem; margin-top: 3rem;">&copy; 2026 LabPortal. All rights reserved.</footer>
 </body>
 </html>

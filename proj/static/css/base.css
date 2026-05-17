@@ -1,0 +1,360 @@
+/* =========================================
+   LABPORTAL — BASE.CSS
+   Sabai pages le yo CSS use garcha
+=========================================*/
+
+:root {
+    --sidebar-width: 220px;
+    --sidebar-bg: #1e293b;
+    --primary: #3b82f6;
+    --primary-dark: #1e40af;
+    --main-bg: #f8fafc;
+    --white: #ffffff;
+    --text-dark: #1e293b;
+    --text-muted: #64748b;
+    --border: #e2e8f0;
+    --radius: 12px;
+    --shadow: 0 4px 6px -1px rgba(0,0,0,0.08);
+    --shadow-hover: 0 10px 20px -4px rgba(0,0,0,0.12);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    background: var(--main-bg);
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    color: var(--text-dark);
+    overflow-x: hidden;
+}
+
+/* ── LAYOUT ─────────────────────────────*/
+.layout {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* ── SIDEBAR ────────────────────────────*/
+.sidebar {
+    width: var(--sidebar-width);
+    background: var(--sidebar-bg);
+    position: fixed;
+    top: 0; left: 0;
+    height: 100vh;
+    z-index: 1050;
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem 1rem;
+    overflow-y: auto;
+    transition: width 0.3s ease;
+}
+
+.sidebar-brand {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--primary);
+    text-align: center;
+    margin-bottom: 2rem;
+    letter-spacing: -0.5px;
+    text-decoration: none;
+}
+
+.sidebar .nav { gap: 4px; }
+
+.sidebar .nav-link {
+    color: #94a3b8;
+    padding: 11px 14px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.9rem;
+    transition: background 0.2s, color 0.2s;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.sidebar .nav-link:hover { background: rgba(255,255,255,0.08); color: #e2e8f0; }
+.sidebar .nav-link.active { background: var(--primary); color: white; }
+
+.sidebar .nav-link i { font-size: 1rem; width: 18px; text-align: center; flex-shrink: 0; }
+
+.sidebar hr { border-color: rgba(255,255,255,0.1); margin: 1rem 0; }
+
+.sidebar-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: #475569;
+    padding: 0 14px;
+    margin-bottom: 6px;
+    margin-top: 0.5rem;
+}
+
+/* Logout button */
+.btn-logout {
+    color: #f87171;
+    background: transparent;
+    border: none;
+    padding: 11px 14px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.9rem;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.btn-logout:hover { background: rgba(248,113,113,0.1); }
+
+/* ── MAIN CONTENT ───────────────────────*/
+.main-content {
+    margin-left: var(--sidebar-width);
+    width: calc(100% - var(--sidebar-width));
+    min-height: 100vh;
+    padding: 1rem 1rem;
+    /* display: flex;
+    flex-direction: column; */
+}
+
+/* ── PAGE HEADER ────────────────────────*/
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 1.25rem;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.page-header h2 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--text-dark);
+}
+
+.user-badge {
+    background: var(--primary);
+    color: white;
+    padding: 7px 16px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    white-space: nowrap;
+}
+
+/* ── CARDS ──────────────────────────────*/
+.card-custom {
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+    margin-bottom: 1.5rem;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card-custom:hover { transform: translateY(-2px); box-shadow: var(--shadow-hover); }
+
+/* ── TABLES ─────────────────────────────*/
+.table thead th {
+    background: #f1f5f9;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+    border-bottom: 2px solid var(--border);
+    padding: 12px 16px;
+}
+
+.table tbody td { padding: 12px 16px; vertical-align: middle; }
+.table tbody tr:hover { background: #f8fafc; }
+
+/* ── FORMS ──────────────────────────────*/
+.form-label { font-weight: 600; font-size: 0.85rem; color: #475569; margin-bottom: 6px; }
+
+.form-control, .form-select {
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    padding: 10px 12px;
+    font-size: 0.9rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(59,130,246,0.12);
+    outline: none;
+}
+
+.form-control[readonly] {
+    background: #f1f5f9;
+    color: var(--text-muted);
+    cursor: not-allowed;
+}
+
+/* ── BUTTONS ────────────────────────────*/
+.btn { border-radius: 8px; font-weight: 600; font-size: 0.9rem; padding: 9px 18px; }
+.btn-primary { background: var(--primary); border-color: var(--primary); }
+.btn-primary:hover { background: var(--primary-dark); border-color: var(--primary-dark); }
+
+/* ── FOLDER CARD ────────────────────────*/
+.folder-card { cursor: pointer; border-left: 4px solid var(--primary) !important; transition: background 0.2s; }
+.folder-card:hover { background: #f0f6ff !important; }
+
+/* ── LAB CARD ───────────────────────────*/
+.lab-card { border-top: 3px solid var(--primary) !important; }
+.lab-card.status-submitted { border-top-color: #10b981 !important; }
+
+/* ── CODE BOX ───────────────────────────*/
+.code-box {
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 13px;
+    background: #0f172a;
+    color: #e2e8f0;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    resize: vertical;
+}
+
+.code-box:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(59,130,246,0.15); }
+
+/* ── COMPILER ───────────────────────────*/
+.lab-workspace {
+    display: grid;
+    grid-template-columns: minmax(320px, 5fr) minmax(560px, 7fr);
+    gap: 1rem;
+    align-items: start;
+}
+
+.lab-details,
+.compiler-panel {
+    min-width: 0;
+}
+
+.compiler-panel {
+    position: sticky;
+    top: 0;
+}
+
+.compiler-wrapper {
+    height: 85vh;
+    display: flex;
+    flex-direction: column;
+    border-radius: var(--radius);
+    overflow: visible;   
+    box-shadow: var(--shadow-hover);
+}
+
+#compiler-iframe { 
+    flex: 1; 
+    width: 100%; 
+    border: none;
+}
+
+.compiler-card {
+    height: 85vh;
+    display: flex;
+    flex-direction: column;
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow-hover);
+    background: var(--white);
+}
+
+@media (max-width: 1399.98px) {
+    .lab-workspace {
+        grid-template-columns: 1fr;
+    }
+
+    .compiler-panel {
+        position: static;
+    }
+
+    .compiler-card {
+        height: 78vh;
+    }
+}
+
+.compiler-header {
+    background: #0f172a;
+    color: white;
+    padding: 10px 16px;
+    font-size: 0.85rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+
+/* ── FOOTER ─────────────────────────────*/
+footer { text-align: center; color: var(--text-muted); font-size: 0.8rem; padding: 2rem 0 1rem; margin-top: 3rem; }
+
+/* ── ALERTS ─────────────────────────────*/
+.alert { border-radius: 10px; border: none; font-size: 0.9rem; }
+
+/* ── SCROLLBAR ──────────────────────────*/
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+
+/* ── MOBILE HAMBURGER TOGGLE ─────────────*/
+.sidebar-toggle {
+    display: none;
+    position: fixed;
+    top: 1rem; left: 1rem;
+    z-index: 1100;
+    background: var(--sidebar-bg);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    width: 40px; height: 40px;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1.1rem;
+}
+
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 1040;
+}
+
+/* ── RESPONSIVE ─────────────────────────*/
+@media (max-width: 992px) {
+    .sidebar {
+        width: 180px;
+    }
+    .main-content {
+        margin-left: 180px;
+        width: calc(100% - 180px);
+        padding: 1.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        width: var(--sidebar-width);
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+    }
+    .sidebar.open {
+        transform: translateX(0);
+    }
+    .sidebar-overlay.open {
+        display: block;
+    }
+    .sidebar-toggle {
+        display: flex;
+    }
+    .main-content {
+        margin-left: 0;
+        width: 100%;
+        padding: 1rem;
+        padding-top: 4rem; /* toggle button ko space */
+    }
+}
