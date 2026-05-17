@@ -35,6 +35,10 @@ else
     echo "requirements.txt not found!"
 fi
 
+if [ -d "proj" ]; then
+    cd proj
+fi
+
 # 5. Applying database migrations
 echo "Applying database migrations..."
 python manage.py makemigrations
