@@ -1,61 +1,165 @@
+{% load static %}
 <!doctype html>
-<html lang="en" data-bs-theme="light">
-    <head>
-        <title>Edit Lab</title>
-        <!-- Required meta tags -->
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
+<html lang="en">
+<head>
+    <title>Edit Lab | LabPortal</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.7.0/tinymce.min.js"></script>
 
-        <!-- Bootstrap CSS v5.3.8 -->
-        <link
-            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
-            rel="stylesheet"
-            integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
-            crossorigin="anonymous"
-        />
-    </head>
+    <style>
+        body { background-color: #f8f9fa; font-family: 'Inter', sans-serif; }
+        .form-card { border: none; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .btn-update { border-radius: 8px; padding: 12px; font-weight: 600; transition: all 0.3s; }
+        .btn-update:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(13, 110, 253, 0.3); }
+        .form-label { font-size: 0.9rem; color: #495057; }
+        
+        /* TinyMCE Branding & Banner Hiding */
+        .tox-notifications-container, .tox-statusbar__branding, .tox-promotion { 
+            display: none !important; 
+        }
+        .tox-tinymce { border-radius: 10px !important; border: 1px solid #dee2e6 !important; }
+    </style>
+</head>
+<body>
 
-    <body>
-        <header>
-            <!-- place navbar here -->
-        </header>
-        <main>
-            <div class="container mt-5">
-                <h2>Edit Lab</h2>
-                <form method="post">
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-8">
+            <a href="{% url 'dashboard' %}" class="btn btn-link text-decoration-none mb-3 text-secondary">
+                <i class="fas fa-arrow-left me-1"></i> Back to Dashboard
+            </a>
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show shadow-sm border-0 mb-4">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <div class="card form-card p-4 p-lg-5">
+                <div class="text-center mb-4">
+                    <div class="bg-warning bg-opacity-10 d-inline-block p-3 rounded-circle mb-3">
+                        <i class="fas fa-edit fa-2x text-warning"></i>
+                    </div>
+                    <h3 class="fw-bold">Edit Lab Work</h3>
+                    <p class="text-muted">Modify the details of the assigned task.</p>
+                </div>
+                
+                <form method="post" enctype="multipart/form-data">
                     {% csrf_token %}
+                    
                     <div class="mb-3">
-                        <label for="title" class="form-label">Title</label>
-                        <input type="text" class="form-control" id="title" name="title" value="{{ lab.title }}" required>
+                        <label class="form-label fw-bold">Lab Title</label>
+                        <input type="text" name="title" class="form-control form-control-lg" value="{{ lab.title }}" required>
                     </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Semester</label>
+                            <select name="semester" class="form-select" required>
+                                {% for i in "12345678"|make_list %}
+                                    <option value="{{ i }}" {% if lab.semester|slugify == i %}selected{% endif %}>Semester {{ i }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Target Batch</label>
+                            <input type="text" name="batch" class="form-control" value="{{ lab.batch }}" required>
+                        </div>
+                    </div>
+
                     <div class="mb-3">
-                        <label for="description" class="form-label">Description</label>
-                        <textarea class="form-control" id="description" name="description" rows="3">{{ lab.description }}</textarea>
+                        <label class="form-label fw-bold">Instructions / Problem Statement</label>
+                        <textarea id="lab_description" name="description" class="form-control" rows="10">{{ lab.description }}</textarea>
                     </div>
-                    <div class="mb-3">
-                        <label for="semester" class="form-label">Semester</label>
-                        <input type="text" class="form-control" id="semester" name="semester" value="{{ lab.semester }}" required>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold"><i class="fas fa-paperclip me-1"></i> Resource File</label>
+                        {% if lab.resource_file %}
+                            <div class="alert alert-info py-2 small d-flex justify-content-between align-items-center">
+                                <span><strong>Current:</strong> {{ lab.resource_file.name }}</span>
+                                <a href="{{ lab.resource_file.url }}" target="_blank" class="btn btn-sm btn-outline-info">View File</a>
+                            </div>
+                        {% endif %}
+                        <input type="file" name="resource_file" class="form-control">
+                        <div class="form-text small">Naya file upload gare purano replace hunchha. Khali chhode puranai rahanchha.</div>
                     </div>
-                    <div class="mb-3">
-                        <label for="batch" class="form-label">Batch</label>
-                        <input type="text" class="form-control" id="batch" name="batch" value="{{ lab.batch }}" required>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Submission Deadline</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="far fa-calendar-alt"></i></span>
+                            <input type="date" name="deadline" id="deadline_input" value="{{ lab.deadline|date:'Y-m-d' }}" class="form-control" required>
+                        </div>
                     </div>
-                    <div class="mb-3">
-                        <label for="deadline" class="form-label">Deadline</label>
-                        <input type="date" class="form-control" id="deadline" name="deadline" value="{{ lab.deadline }}" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Update Lab</button>
+
+                    <button type="submit" class="btn btn-warning w-100 btn-update shadow-sm mt-2 text-dark">
+                        <i class="fas fa-save me-2"></i> Save Changes
+                    </button>
                 </form>
             </div>
-        </main>
-        <footer>
-            <!-- place footer here -->
-        </footer>
-        <!-- Bootstrap JavaScript Bundle (includes Popper) -->
-        <script
-            src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
-            integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
-            crossorigin="anonymous"
-        ></script>
-    </body>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    tinymce.init({
+        selector: '#lab_description',
+        plugins: 'advlist autolink lists link image charmap preview anchor searchreplace code fullscreen insertdatetime media table help wordcount',
+        toolbar: 'undo redo | blocks | bold italic forecolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image | removeformat | help',
+        height: 400,
+        branding: false,
+        promotion: false,
+
+        /* Long Script: Local Image Upload Support */
+        image_title: true,
+        automatic_uploads: true,
+        file_picker_types: 'image',
+        file_picker_callback: function (cb, value, meta) {
+            var input = document.createElement('input');
+            input.setAttribute('type', 'file');
+            input.setAttribute('accept', 'image/*');
+
+            input.onchange = function () {
+                var file = this.files[0];
+                var reader = new FileReader();
+                reader.onload = function () {
+                    var id = 'blobid' + (new Date()).getTime();
+                    var blobCache =  tinymce.activeEditor.editorUpload.blobCache;
+                    var base64 = reader.result.split(',')[1];
+                    var blobInfo = blobCache.create(id, file, base64);
+                    blobCache.add(blobInfo);
+
+                    cb(blobInfo.blobUri(), { title: file.name });
+                };
+                reader.readAsDataURL(file);
+            };
+            input.click();
+        },
+        
+        setup: function (editor) {
+            editor.on('change', function () {
+                tinymce.triggerSave();
+            });
+        }
+    });
+
+    // Past date block garne logic
+    const today = new Date().toISOString().split('T')[0];
+    const deadlineInput = document.getElementById('deadline_input');
+    if(deadlineInput) {
+        deadlineInput.setAttribute('min', today);
+    }
+</script>
+
+</body> 
 </html>

@@ -8,8 +8,9 @@ urlpatterns = [
     path('add_lab/', add_lab, name='add_lab'),
     path('edit_lab/<int:lab_id>/', edit_lab, name='edit_lab'),
     path('delete_lab/<int:lab_id>/', delete_lab, name='delete_lab'),
-    path('compiler/', compiler, name='compiler'),
+    # path('compiler/', compiler, name='compiler'),
     path('view_submissions/<int:lab_id>/', view_submissions, name='view_submissions'),
     path('delete_submissions/', delete_submissions, name='delete_submissions'),
     path('view_profile/', view_profile, name='view_profile'),
+    path('student_status_list/', student_status_list, name='student_status_list'),
 ]

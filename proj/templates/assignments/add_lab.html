@@ -1,3 +1,4 @@
+{% load static %}
 <!doctype html>
 <html lang="en">
 <head>
@@ -6,22 +7,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.7.0/tinymce.min.js"></script>
+
     <style>
-        body { background-color: #f8f9fa; }
+        body { background-color: #f8f9fa; font-family: 'Inter', sans-serif; }
         .form-card { border: none; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
         .btn-submit { border-radius: 8px; padding: 12px; font-weight: 600; transition: all 0.3s; }
         .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(13, 110, 253, 0.3); }
         .form-label { font-size: 0.9rem; color: #495057; }
+        .tox-tinymce { border-radius: 10px !important; border: 1px solid #dee2e6 !important; }
     </style>
 </head>
 <body>
 
 <div class="container py-5">
     <div class="row justify-content-center">
-        <div class="col-md-8 col-lg-7">
+        <div class="col-md-8 col-lg-8"> 
             <a href="{% url 'dashboard' %}" class="btn btn-link text-decoration-none mb-3 text-secondary">
                 <i class="fas fa-arrow-left me-1"></i> Back to Dashboard
             </a>
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show shadow-sm border-0 mb-4">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
 
             <div class="card form-card p-4 p-lg-5">
                 <div class="text-center mb-4">
@@ -29,51 +43,53 @@
                         <i class="fas fa-flask fa-2x text-primary"></i>
                     </div>
                     <h3 class="fw-bold">Post New Lab Work</h3>
-                    <p class="text-muted">Fill in the details to assign a new task to your students.</p>
+                    <p class="text-muted">Create assignment with images and rich formatting.</p>
                 </div>
                 
-                <form method="post">
+                <form method="post" enctype="multipart/form-data">
                     {% csrf_token %}
                     
                     <div class="mb-3">
                         <label class="form-label fw-bold">Lab Title</label>
-                        <input type="text" name="title" class="form-control form-control-lg" placeholder="e.g. Data Structures: Linked List Implementation" required>
+                        <input type="text" name="title" value="{{ title|default:'' }}" class="form-control form-control-lg" placeholder="e.g. Java Lab 1: Classes and Objects" required>
                     </div>
 
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label class="form-label fw-bold">Semester</label>
                             <select name="semester" class="form-select" required>
-                                <option value="" selected disabled>Select Semester</option>
+                                <option value="" disabled {% if not semester %}selected{% endif %}>Select Semester</option>
                                 {% for i in "12345678"|make_list %}
-                                    <option value="{{ i }}">Semester {{ i }}</option>
+                                    <option value="{{ i }}" {% if semester == i %}selected{% endif %}>Semester {{ i }}</option>
                                 {% endfor %}
                             </select>
                         </div>
 
                         <div class="col-md-6 mb-3">
                             <label class="form-label fw-bold">Target Batch</label>
-                            <input list="batchOptions" name="batch" class="form-control" placeholder="e.g. 2080" required>
+                            <input list="batchOptions" name="batch" value="{{ batch|default:'' }}" class="form-control" placeholder="e.g. 2080" required>
                             <datalist id="batchOptions">
-                                <option value="2079">
-                                <option value="2080">
-                                <option value="2081">
-                                <option value="2082">
+                                <option value="2079"><option value="2080"><option value="2081"><option value="2082">
                             </datalist>
                         </div>
                     </div>
 
                     <div class="mb-3">
                         <label class="form-label fw-bold">Instructions / Problem Statement</label>
-                        <textarea name="description" class="form-control" rows="6" placeholder="Write the lab tasks here... Use clear steps." required></textarea>
-                        <div class="form-text small">Explain the logic or expected output for the student.</div>
+                        <textarea id="lab_description" name="description" class="form-control" rows="10">{{ description|default:'' }}</textarea>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold"><i class="fas fa-paperclip me-1"></i> Attach Resource File (PDF/Docs/Zip)</label>
+                        <input type="file" name="resource_file" class="form-control">
+                        <div class="form-text small">Optional: Reference materials for students.</div>
                     </div>
 
                     <div class="mb-4">
                         <label class="form-label fw-bold">Submission Deadline</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="far fa-calendar-alt"></i></span>
-                            <input type="datetime-local" name="deadline" class="form-control" required>
+                            <input type="date" name="deadline" id="deadline_input" value="{{ deadline|default:'' }}" class="form-control" required>
                         </div>
                     </div>
 
@@ -82,14 +98,57 @@
                     </button>
                 </form>
             </div>
-            
-            <p class="text-center mt-4 text-muted small">
-                Labs published here will be visible to students matching the <strong>Semester</strong> and <strong>Batch</strong>.
-            </p>
         </div>
     </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    tinymce.init({
+        selector: '#lab_description',
+        plugins: 'advlist autolink lists link image charmap preview anchor searchreplace code fullscreen insertdatetime media table help wordcount',
+        toolbar: 'undo redo | blocks | bold italic forecolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image | removeformat | help',
+        height: 400,
+        branding: false,
+        promotion: false,
+        
+        /* IMAGE UPLOAD LOGIC */
+        image_title: true,
+        automatic_uploads: true,
+        file_picker_types: 'image',
+        file_picker_callback: function (cb, value, meta) {
+            var input = document.createElement('input');
+            input.setAttribute('type', 'file');
+            input.setAttribute('accept', 'image/*');
+
+            input.onchange = function () {
+                var file = this.files[0];
+                var reader = new FileReader();
+                reader.onload = function () {
+                    var id = 'blobid' + (new Date()).getTime();
+                    var blobCache =  tinymce.activeEditor.editorUpload.blobCache;
+                    var base64 = reader.result.split(',')[1];
+                    var blobInfo = blobCache.create(id, file, base64);
+                    blobCache.add(blobInfo);
+
+                    cb(blobInfo.blobUri(), { title: file.name });
+                };
+                reader.readAsDataURL(file);
+            };
+            input.click();
+        },
+
+        setup: function (editor) {
+            editor.on('change', function () {
+                tinymce.triggerSave();
+            });
+        }
+    });
+
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('deadline_input').setAttribute('min', today);
+</script>
+
 </body>
 </html>
